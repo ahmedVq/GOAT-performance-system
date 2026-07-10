@@ -1,0 +1,13 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "goat-frontend",
+      "runtimeExecutable": "C:\\Users\\Lenovo\\AppData\\Local\\Programs\\nodejs\\node.exe",
+      "runtimeArgs": ["C:\\Users\\Lenovo\\AppData\\Local\\Programs\\nodejs\\node_modules\\npm\\bin\\npm-cli.js", "run", "dev", "--prefix", "E:\\GOAT\\Development\\Coding\\goat-management-system\\frontend"],
+      "env": { "PATH": "C:\\Users\\Lenovo\\AppData\\Local\\Programs\\nodejs;C:\\Windows\\System32" },
+      "port": 5173,
+      "autoPort": true
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/Lenovo/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin/1c333c89-905a-4efa-871f-b105b7ca0fc2/eccf349b-dbb4-4fe1-ab77-bde7fb4c42cd/skills/xlsx/**)",
+      "Bash(python -c ' *)",
+      "Bash(python -c \"import pandas; print\\(pandas.__version__\\)\")",
+      "PowerShell(pip install pandas openpyxl 2>&1)",
+      "PowerShell(python --version)",
+      "PowerShell(& \"C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\" -m pip install openpyxl pandas 2>&1)",
+      "PowerShell(& \"C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\" \"C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\read_excel.py\")",
+      "PowerShell(Get-ChildItem \"E:\\\\GOAT\\\\\" | ForEach-Object { $_.FullName })",
+      "PowerShell(& \"C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\" \"C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\read_excel.py\" 2>&1)",
+      "PowerShell(& \"C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\" \"C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\read_excel2.py\")",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"E:\\\\GOAT\\\\Development\\\\Coding\\\\goat-management-system\\\\frontend\")",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"E:\\\\GOAT\\\\Development\\\\Coding\\\\goat-management-system\\\\backend\")",
+      "PowerShell(node --version)",
+      "PowerShell(npm --version)",
+      "PowerShell(winget --version 2>$null)",
+      "PowerShell(Get-Command choco -ErrorAction SilentlyContinue)",
+      "PowerShell(if \\($?\\) { \"winget available\" } else { \"no winget\" })",
+      "PowerShell(& \"C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\" \"C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\create_admin.py\" 2>&1)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310;\" + $env:PATH; cd \"E:\\\\GOAT\\\\Development\\\\Coding\\\\goat-management-system\\\\backend\"; & \"C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\" manage.py test accounts students assessments leaderboard analytics --verbosity=2 2>&1 | Select-Object -Last 60)",
+      "Bash(find /c/Users/Lenovo -name \"*.png\" -newer /c/Users/Lenovo/Downloads/IMG_1884.jpg 2>/dev/null | head -20)",
+      "Bash(ls -lt /c/Users/Lenovo/Downloads/ | head -20)",
+      "PowerShell(cd \"E:\\\\GOAT\\\\Development\\\\Coding\\\\goat-management-system\\\\backend\"; Start-Process powershell -ArgumentList \"-NoExit\", \"-Command\", \"& 'C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe' manage.py runserver\" -WorkingDirectory \"E:\\\\GOAT\\\\Development\\\\Coding\\\\goat-management-system\\\\backend\")",
+      "PowerShell(netstat -ano)"
+    ]
+  }
+}
