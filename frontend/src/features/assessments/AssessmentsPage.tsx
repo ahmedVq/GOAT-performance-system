@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { assessmentsService } from '../../services/students.service'
 import { Badge } from '../../components/ui/Badge'
 import { LoadingSkeleton } from '../../components/ui/LoadingSkeleton'
-import { ClipboardList } from 'lucide-react'
+import { ClipboardList, Plus } from 'lucide-react'
 import type { Sport } from '../../types'
 
 const filterStyle = {
@@ -47,7 +47,15 @@ export function AssessmentsPage() {
           </div>
         </div>
 
-        <div className="flex gap-2 pb-1">
+        <div className="flex gap-2 pb-1 flex-wrap items-center">
+          <button
+            onClick={() => navigate('/admin/assessments/entry')}
+            className="flex items-center gap-2 text-white font-display text-xs tracking-[0.2em] uppercase px-4 py-2 transition-all"
+            style={{ background: 'linear-gradient(135deg,#E11919,#B90F16)', clipPath: 'polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%)' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 0 24px rgba(225,25,25,0.35)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}>
+            <Plus size={12} /> New Entry
+          </button>
           {(['', 'boxing', 'kickboxing'] as const).map(v => (
             <button key={v} onClick={() => setSport(v as Sport | '')}
               style={{

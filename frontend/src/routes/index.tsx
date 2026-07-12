@@ -13,9 +13,9 @@ import { StudentProfilePage } from '../features/student/StudentProfilePage'
 import { StudentsPage } from '../features/students/StudentsPage'
 import { StudentDetailPage } from '../features/students/StudentDetailPage'
 import { AssessmentsPage } from '../features/assessments/AssessmentsPage'
+import { AssessmentEntryPage } from '../features/assessments/AssessmentEntryPage'
 import { AnalyticsPage } from '../features/analytics/AnalyticsPage'
 import { LeaderboardPage } from '../features/leaderboard/LeaderboardPage'
-import { SyncPage } from '../features/sync/SyncPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
 
 function ComingSoon({ label }: { label: string }) {
@@ -44,9 +44,9 @@ export function AppRouter() {
               <Route path="/admin/students" element={<StudentsPage />} />
               <Route path="/admin/students/:id" element={<StudentDetailPage />} />
               <Route path="/admin/assessments" element={<AssessmentsPage />} />
+              <Route path="/admin/assessments/entry" element={<AssessmentEntryPage />} />
               <Route path="/admin/analytics" element={<AnalyticsPage />} />
               <Route path="/admin/leaderboard" element={<LeaderboardPage />} />
-              <Route path="/admin/sync" element={<SyncPage />} />
               <Route path="/admin/settings" element={<SettingsPage />} />
             </Route>
           </Route>

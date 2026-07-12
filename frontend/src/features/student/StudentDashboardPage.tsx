@@ -13,12 +13,10 @@ import { Trophy, Target, TrendingUp, ClipboardList, Award } from 'lucide-react'
 export function StudentDashboardPage() {
   const { user } = useAuth()
 
-  const { data: students } = useQuery({
+  const { data: myStudent } = useQuery({
     queryKey: ['my-student-profile'],
-    queryFn: () => studentsService.list(),
+    queryFn: studentsService.getMe,
   })
-
-  const myStudent = (students as any[])?.find((s: any) => s.user?.email === user?.email || s.email === user?.email)
 
   const { data: progress, isLoading: loadingProgress } = useQuery({
     queryKey: ['my-progress', myStudent?.id],
@@ -32,9 +30,11 @@ export function StudentDashboardPage() {
   })
 
   const prog = progress as any
-  const sessions = prog?.sessions ?? []
+  // API returns history (oldest→newest); reverse for display (newest first)
+  const history: any[] = prog?.history ?? []
+  const latest = history[history.length - 1]
 
-  const trendData = [...sessions].reverse().map((s: any) => ({
+  const trendData = [...history].map((s: any) => ({
     date: new Date(s.assessment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
     score: s.grade_percentage,
   }))
@@ -90,10 +90,10 @@ export function StudentDashboardPage() {
 
       {/* ── Stats ───────────────────────────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Current Score"  value={prog?.current_score != null ? `${prog.current_score}%` : '—'} icon={Target}      accent />
-        <StatCard label="Improvement"    value={prog?.improvement   != null ? `${prog.improvement > 0 ? '+' : ''}${prog.improvement}%` : '—'} icon={TrendingUp} />
-        <StatCard label="Sessions"       value={prog?.total_sessions ?? 0}                                    icon={ClipboardList} />
-        <StatCard label="Rank"           value={myRank > 0 ? `#${myRank}` : '—'}                             icon={Award}         sub="on leaderboard" />
+        <StatCard label="Current Score"  value={latest ? `${latest.grade_percentage}%` : '—'} icon={Target}      accent />
+        <StatCard label="Improvement"    value={prog?.improvement != null ? `${prog.improvement > 0 ? '+' : ''}${(prog.improvement * 10).toFixed(1)}%` : '—'} icon={TrendingUp} />
+        <StatCard label="Assessments"    value={prog?.total_assessments ?? 0}                icon={ClipboardList} />
+        <StatCard label="Rank"           value={myRank > 0 ? `#${myRank}` : '—'}            icon={Award}         sub="on leaderboard" />
       </div>
 
       {/* ── Top 3 banner ────────────────────────────────── */}
@@ -171,7 +171,7 @@ export function StudentDashboardPage() {
       )}
 
       {/* ── Latest assessment ───────────────────────────── */}
-      {sessions[0] && (
+      {latest && (
         <div className="relative overflow-hidden"
           style={{
             background: 'linear-gradient(145deg, #0d0d0d 0%, #080808 100%)',
@@ -186,27 +186,45 @@ export function StudentDashboardPage() {
             <div className="flex items-center gap-3 mb-5">
               <div className="w-[3px] h-4 bg-blood-red" />
               <h3 className="font-display text-off-white text-xs uppercase tracking-[0.22em]">Latest Assessment</h3>
+              <span style={{ color: 'rgba(155,163,167,0.35)', fontSize: '0.58rem', letterSpacing: '0.2em' }}>
+                {new Date(latest.assessment_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </span>
             </div>
-            <div className="flex items-start justify-between gap-6">
-              <div className="flex-1">
-                <p style={{ color: 'rgba(155,163,167,0.45)', fontSize: '0.58rem', letterSpacing: '0.26em', textTransform: 'uppercase', marginBottom: 10 }}>
-                  {new Date(sessions[0].assessment_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+
+            {/* Score + level */}
+            <div className="flex items-center gap-6 mb-5 pb-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <div>
+                <p style={{ color: 'rgba(155,163,167,0.4)', fontSize: '0.5rem', letterSpacing: '0.24em', textTransform: 'uppercase', marginBottom: 4 }}>Final Score</p>
+                <p className="font-display text-blood-red" style={{ fontSize: '3.2rem', lineHeight: 1 }}>
+                  {latest.grade_percentage}<span style={{ fontSize: '1.4rem' }}>%</span>
                 </p>
-                {sessions[0].coach_notes && (
-                  <p className="text-off-white text-sm leading-relaxed max-w-lg">{sessions[0].coach_notes}</p>
-                )}
-                {sessions[0].action_plan && (
-                  <p className="text-steel-gray/60 text-sm mt-2 italic leading-relaxed">{sessions[0].action_plan}</p>
-                )}
               </div>
-              <div className="text-right shrink-0">
-                <p className="font-display text-blood-red" style={{ fontSize: '3rem', lineHeight: 1, letterSpacing: '0.02em' }}>
-                  {sessions[0].grade_percentage}%
-                </p>
-                <div className="mt-2">
-                  <Badge variant={sessions[0].level_at_assessment as any}>{sessions[0].level_at_assessment}</Badge>
+              <div>
+                <p style={{ color: 'rgba(155,163,167,0.4)', fontSize: '0.5rem', letterSpacing: '0.24em', textTransform: 'uppercase', marginBottom: 6 }}>Level</p>
+                <Badge variant={latest.level_at_assessment as any}>{latest.level_at_assessment}</Badge>
+              </div>
+              {latest.sessions_completed > 0 && (
+                <div>
+                  <p style={{ color: 'rgba(155,163,167,0.4)', fontSize: '0.5rem', letterSpacing: '0.24em', textTransform: 'uppercase', marginBottom: 4 }}>Sessions</p>
+                  <p className="font-display text-off-white text-xl">{latest.sessions_completed}</p>
                 </div>
-              </div>
+              )}
+            </div>
+
+            {/* Notes + Plan */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {latest.coach_notes ? (
+                <div className="p-4" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <p style={{ color: 'rgba(155,163,167,0.4)', fontSize: '0.5rem', letterSpacing: '0.26em', textTransform: 'uppercase', marginBottom: 8 }}>Coach Notes</p>
+                  <p className="text-off-white/80 text-sm leading-relaxed">{latest.coach_notes}</p>
+                </div>
+              ) : null}
+              {latest.action_plan ? (
+                <div className="p-4" style={{ background: 'rgba(225,25,25,0.03)', border: '1px solid rgba(225,25,25,0.1)' }}>
+                  <p style={{ color: 'rgba(225,25,25,0.45)', fontSize: '0.5rem', letterSpacing: '0.26em', textTransform: 'uppercase', marginBottom: 8 }}>Action Plan / Goals</p>
+                  <p className="text-off-white/75 text-sm leading-relaxed italic">{latest.action_plan}</p>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

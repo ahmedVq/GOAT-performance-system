@@ -101,6 +101,17 @@ class StudentDetailView(APIView):
         return success_response(message=f'Student {student.student_id} deactivated.')
 
 
+class StudentMeView(APIView):
+    """Return the logged-in student's own profile."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if not hasattr(request.user, 'student_profile'):
+            return error_response('No student profile for this user.', status_code=404)
+        student = request.user.student_profile
+        return success_response(data=StudentSerializer(student).data)
+
+
 class StudentProgressView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -112,7 +123,7 @@ class StudentProgressView(APIView):
 
         if not request.user.is_admin and not hasattr(request.user, 'student_profile'):
             return error_response('Forbidden.', status_code=403)
-        if not request.user.is_admin and str(request.user.student_profile.id) != pk:
+        if not request.user.is_admin and request.user.student_profile.id != student.id:
             return error_response('Forbidden.', status_code=403)
 
         progress = get_student_progress(str(student.id))

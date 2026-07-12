@@ -7,15 +7,12 @@ import { LoadingSkeleton } from '../../components/ui/LoadingSkeleton'
 import { ChevronDown, ChevronUp, ClipboardList } from 'lucide-react'
 
 export function StudentHistoryPage() {
-  const { user } = useAuth()
   const [expanded, setExpanded] = useState<string | null>(null)
 
-  const { data: students } = useQuery({
+  const { data: myStudent } = useQuery({
     queryKey: ['my-student-profile'],
-    queryFn: () => studentsService.list(),
+    queryFn: studentsService.getMe,
   })
-
-  const myStudent = (students as any[])?.find((s: any) => s.user?.email === user?.email || s.email === user?.email)
 
   const { data: progress, isLoading } = useQuery({
     queryKey: ['my-progress', myStudent?.id],
@@ -23,7 +20,8 @@ export function StudentHistoryPage() {
     enabled: !!myStudent?.id,
   })
 
-  const sessions = (progress as any)?.sessions ?? []
+  // API returns `history` ordered oldest→newest; reverse so newest is first
+  const sessions = [...((progress as any)?.history ?? [])].reverse()
 
   return (
     <div className="space-y-8">
