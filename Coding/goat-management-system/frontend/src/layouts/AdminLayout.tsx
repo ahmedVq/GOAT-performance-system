@@ -3,7 +3,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../features/auth/AuthContext'
 import {
   LayoutDashboard, Users, ClipboardList, BarChart3,
-  Trophy, Settings, RefreshCw, LogOut, Menu, X, ChevronRight,
+  Trophy, Settings, LogOut, Menu, X, ChevronRight,
 } from 'lucide-react'
 import { LiveClock } from '../components/ui/LiveClock'
 
@@ -13,7 +13,6 @@ const navItems = [
   { to: '/admin/assessments', icon: ClipboardList, label: 'Assessments' },
   { to: '/admin/analytics', icon: BarChart3, label: 'Analytics' },
   { to: '/admin/leaderboard', icon: Trophy, label: 'Leaderboard' },
-  { to: '/admin/sync', icon: RefreshCw, label: 'Sync' },
   { to: '/admin/settings', icon: Settings, label: 'Settings' },
 ]
 

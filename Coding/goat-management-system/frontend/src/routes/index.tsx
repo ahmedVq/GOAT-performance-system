@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from '../features/auth/AuthContext'
 import { ProtectedRoute } from '../features/auth/ProtectedRoute'
 import { LoginPage } from '../features/auth/LoginPage'
+import { ResetPasswordPage } from '../features/auth/ResetPasswordPage'
 import { AdminLayout } from '../layouts/AdminLayout'
 import { StudentLayout } from '../layouts/StudentLayout'
 import { AdminDashboardPage } from '../features/dashboard/AdminDashboardPage'
@@ -13,9 +14,9 @@ import { StudentProfilePage } from '../features/student/StudentProfilePage'
 import { StudentsPage } from '../features/students/StudentsPage'
 import { StudentDetailPage } from '../features/students/StudentDetailPage'
 import { AssessmentsPage } from '../features/assessments/AssessmentsPage'
+import { AssessmentEntryPage } from '../features/assessments/AssessmentEntryPage'
 import { AnalyticsPage } from '../features/analytics/AnalyticsPage'
 import { LeaderboardPage } from '../features/leaderboard/LeaderboardPage'
-import { SyncPage } from '../features/sync/SyncPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
 
 function ComingSoon({ label }: { label: string }) {
@@ -36,6 +37,7 @@ export function AppRouter() {
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
 
           {/* Admin routes */}
           <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
@@ -44,9 +46,9 @@ export function AppRouter() {
               <Route path="/admin/students" element={<StudentsPage />} />
               <Route path="/admin/students/:id" element={<StudentDetailPage />} />
               <Route path="/admin/assessments" element={<AssessmentsPage />} />
+              <Route path="/admin/assessments/entry" element={<AssessmentEntryPage />} />
               <Route path="/admin/analytics" element={<AnalyticsPage />} />
               <Route path="/admin/leaderboard" element={<LeaderboardPage />} />
-              <Route path="/admin/sync" element={<SyncPage />} />
               <Route path="/admin/settings" element={<SettingsPage />} />
             </Route>
           </Route>

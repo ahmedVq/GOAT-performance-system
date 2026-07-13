@@ -35,6 +35,15 @@ export const studentsService = {
     await api.delete(`/students/${id}/`)
   },
 
+  async hardDelete(id: string): Promise<void> {
+    await api.delete(`/students/${id}/delete/`)
+  },
+
+  async getMe(): Promise<any> {
+    const { data } = await api.get<ApiResponse<any>>('/students/me/')
+    return data.data
+  },
+
   async getProgress(id: string): Promise<any> {
     const { data } = await api.get<ApiResponse<any>>(`/students/${id}/progress/`)
     return data.data

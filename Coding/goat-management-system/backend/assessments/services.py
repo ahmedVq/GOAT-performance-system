@@ -91,37 +91,53 @@ def get_student_progress(student_id: str) -> dict:
     """
     Return a progress summary for a student across all their assessments.
     """
-    sessions = (
+    sessions = list(
         AssessmentSession.objects
         .filter(student_id=student_id, overall_score__isnull=False)
         .order_by('assessment_date')
-        .values('id', 'assessment_date', 'overall_score', 'grade_percentage', 'level_at_assessment')
+        .values('id', 'assessment_date', 'overall_score', 'grade_percentage',
+                'level_at_assessment', 'coach_notes', 'action_plan', 'sessions_completed')
     )
 
     if not sessions:
         return _empty_progress()
 
     scores = [Decimal(str(s['overall_score'])) for s in sessions]
-    latest = sessions[len(sessions) - 1]
-    previous = sessions[len(sessions) - 2] if len(sessions) > 1 else None
+    latest = sessions[-1]
+    previous = sessions[-2] if len(sessions) > 1 else None
 
     current = Decimal(str(latest['overall_score']))
     prev = Decimal(str(previous['overall_score'])) if previous else None
 
+    # Include pillar scores for the latest session (for radar chart)
+    latest_pillar_scores = list(
+        PillarScore.objects
+        .filter(session_id=latest['id'])
+        .select_related('pillar')
+        .values('pillar__name', 'pillar__order', 'score')
+        .order_by('pillar__order')
+    )
+
+    improvement_pct = round((current - prev) * 10, 1) if prev is not None else None
+
     return {
+        'current_grade': float(current * 10),
         'current_score': current,
         'previous_score': prev,
-        'improvement': round(current - prev, 2) if prev is not None else None,
-        'highest_score': max(scores),
-        'lowest_score': min(scores),
-        'average_score': round(sum(scores) / len(scores), 2),
-        'total_assessments': len(scores),
-        'history': list(sessions),
+        'improvement': improvement_pct,
+        'highest_score': float(max(scores) * 10),
+        'lowest_score': float(min(scores) * 10),
+        'average_score': float(round(sum(scores) / len(scores), 2) * 10),
+        'total_assessments': len(sessions),
+        'latest_level': latest['level_at_assessment'],
+        'latest_pillar_scores': latest_pillar_scores,
+        'history': sessions,
     }
 
 
 def _empty_progress() -> dict:
     return {
+        'current_grade': None,
         'current_score': None,
         'previous_score': None,
         'improvement': None,
@@ -129,5 +145,7 @@ def _empty_progress() -> dict:
         'lowest_score': None,
         'average_score': None,
         'total_assessments': 0,
+        'latest_level': None,
+        'latest_pillar_scores': [],
         'history': [],
     }

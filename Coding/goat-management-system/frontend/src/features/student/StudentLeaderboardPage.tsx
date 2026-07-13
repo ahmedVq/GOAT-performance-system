@@ -15,12 +15,10 @@ const MEDAL = [
 export function StudentLeaderboardPage() {
   const { user } = useAuth()
 
-  const { data: students } = useQuery({
+  const { data: myStudent } = useQuery({
     queryKey: ['my-student-profile'],
-    queryFn: () => studentsService.list(),
+    queryFn: studentsService.getMe,
   })
-
-  const myStudent = (students as any[])?.find((s: any) => s.user?.email === user?.email || s.email === user?.email)
 
   const { data, isLoading } = useQuery({
     queryKey: ['leaderboard'],

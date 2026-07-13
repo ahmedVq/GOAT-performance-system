@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useAuth } from './AuthContext'
+import { X, Mail } from 'lucide-react'
 
 const schema = z.object({
   email: z.string().email('Enter a valid email.'),
@@ -19,6 +20,7 @@ export function LoginPage() {
   const [serverError, setServerError] = useState('')
   const [phase, setPhase] = useState<'intro' | 'form'>('intro')
   const [go, setGo] = useState(false)
+  const [showForgot, setShowForgot] = useState(false)
 
   useEffect(() => {
     const t = setTimeout(() => setGo(true), 80)
@@ -423,6 +425,15 @@ export function LoginPage() {
                 </div>
               )}
 
+              <div className="flex justify-end">
+                <button type="button" onClick={() => setShowForgot(true)}
+                  style={{ color: 'rgba(225,25,25,0.45)', fontSize: '0.57rem', letterSpacing: '0.22em', textTransform: 'uppercase', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#E11919' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(225,25,25,0.45)' }}>
+                  Forgot Password?
+                </button>
+              </div>
+
               <div className="pt-1">
                 <button type="button" onClick={handleSubmit(onSubmit)} disabled={isSubmitting}
                   className="relative w-full py-3.5 text-white font-display text-sm tracking-[0.22em] uppercase disabled:opacity-50 transition-all duration-300 active:scale-[0.98] overflow-hidden group cursor-pointer"
@@ -453,6 +464,57 @@ export function LoginPage() {
           </div>
         </div>
       </div>
+
+      {/* Forgot Password Modal */}
+      {showForgot && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(8px)' }}>
+          <div className="relative w-full max-w-sm"
+            style={{ background: 'linear-gradient(145deg,#0d0d0d,#070707)', border: '1px solid rgba(225,25,25,0.25)', clipPath: 'polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%)' }}>
+            <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(to right,#E11919,rgba(225,25,25,0.2) 50%,transparent)' }} />
+            <div className="absolute top-0 left-0 bottom-0 w-px" style={{ background: 'linear-gradient(to bottom,#E11919,transparent 60%)' }} />
+            <div className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 flex items-center justify-center"
+                    style={{ background: 'rgba(225,25,25,0.1)', border: '1px solid rgba(225,25,25,0.25)' }}>
+                    <Mail size={16} className="text-blood-red" />
+                  </div>
+                  <h3 className="font-display text-off-white tracking-wide" style={{ fontSize: '1.1rem' }}>Forgot Password</h3>
+                </div>
+                <button onClick={() => setShowForgot(false)}
+                  style={{ color: 'rgba(155,163,167,0.4)', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#F5F5F5' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(155,163,167,0.4)' }}>
+                  <X size={16} />
+                </button>
+              </div>
+              <div className="space-y-4">
+                <p className="text-steel-gray text-xs leading-relaxed">
+                  Password resets are managed by the academy administrator. Contact them directly to regain access to your account.
+                </p>
+                <div className="p-4 space-y-3"
+                  style={{ background: 'rgba(225,25,25,0.04)', border: '1px solid rgba(225,25,25,0.12)' }}>
+                  <p style={{ color: 'rgba(155,163,167,0.4)', fontSize: '0.52rem', letterSpacing: '0.3em', textTransform: 'uppercase' }}>
+                    Administrator Contact
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Mail size={12} style={{ color: 'rgba(225,25,25,0.6)' }} />
+                    <span style={{ color: 'rgba(245,245,245,0.7)', fontSize: '0.8rem' }}>admin@goat.com</span>
+                  </div>
+                </div>
+                <button onClick={() => setShowForgot(false)}
+                  className="w-full py-2.5 text-white font-display text-xs tracking-widest uppercase transition-all"
+                  style={{ background: 'linear-gradient(135deg,#E11919,#B90F16)', clipPath: 'polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 0 24px rgba(225,25,25,0.4)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}>
+                  Got It
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
