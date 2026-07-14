@@ -1,0 +1,152 @@
+<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Camo texture via pattern -->
+    <pattern id="camo" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <rect width="60" height="60" fill="#1c1c1c"/>
+      <path d="M0 10 Q15 5 25 15 Q35 25 20 30 Q5 35 0 25Z" fill="#252525" opacity="0.9"/>
+      <path d="M30 0 Q50 8 55 20 Q60 35 45 38 Q30 40 28 28 Q26 16 30 0Z" fill="#1a1a1a"/>
+      <path d="M10 40 Q25 35 35 45 Q45 55 30 60 Q15 65 8 52 Q1 42 10 40Z" fill="#222222"/>
+      <path d="M50 45 Q62 42 60 55 Q58 68 48 60 Q40 53 50 45Z" fill="#272727"/>
+    </pattern>
+    <!-- Clip inner circle for camo -->
+    <clipPath id="innerClip">
+      <circle cx="150" cy="150" r="113"/>
+    </clipPath>
+    <!-- Text paths -->
+    <path id="topArc" d="M 34,150 A 116,116 0 0,1 266,150" fill="none"/>
+    <path id="bottomArcEgypt" d="M 68,215 A 100,100 0 0,0 115,245" fill="none"/>
+    <path id="bottomArcMMXXIV" d="M 185,245 A 100,100 0 0,0 232,215" fill="none"/>
+  </defs>
+
+  <!-- Outer dark fill -->
+  <circle cx="150" cy="150" r="149" fill="#0d0d0d"/>
+
+  <!-- Outer red ring - thick -->
+  <circle cx="150" cy="150" r="146" fill="none" stroke="#E11919" stroke-width="7"/>
+  <circle cx="150" cy="150" r="140" fill="none" stroke="#E11919" stroke-width="1.5" opacity="0.4"/>
+
+  <!-- Text band background - dark charcoal -->
+  <circle cx="150" cy="150" r="136" fill="#141414"/>
+
+  <!-- Inner red accent ring -->
+  <circle cx="150" cy="150" r="118" fill="none" stroke="#E11919" stroke-width="4"/>
+  <circle cx="150" cy="150" r="115" fill="none" stroke="#E11919" stroke-width="1" opacity="0.3"/>
+
+  <!-- Camo center background -->
+  <circle cx="150" cy="150" r="113" fill="url(#camo)"/>
+
+  <!-- Extra dark overlay on camo for depth -->
+  <circle cx="150" cy="150" r="113" fill="#000" opacity="0.3"/>
+
+  <!-- ═══ TOP TEXT ARC: GOAT MARTIAL ARTS ═══ -->
+  <text font-family="'Arial Black', 'Impact', sans-serif" font-size="15.5"
+    font-weight="900" fill="white" letter-spacing="2.8">
+    <textPath href="#topArc" startOffset="50%" text-anchor="middle">GOAT MARTIAL ARTS</textPath>
+  </text>
+
+  <!-- LEFT separator: red bar + boxing glove -->
+  <rect x="24" y="147" width="30" height="3.5" fill="#E11919" rx="0.5"/>
+  <rect x="24" y="152" width="30" height="3.5" fill="#E11919" rx="0.5" opacity="0.4"/>
+  <!-- Boxing glove left (simplified) -->
+  <g transform="translate(38, 137)">
+    <!-- Glove body -->
+    <ellipse cx="0" cy="0" rx="9" ry="7" fill="white"/>
+    <!-- Thumb -->
+    <ellipse cx="7" cy="-3" rx="4" ry="3" fill="white" transform="rotate(30 7 -3)"/>
+    <!-- Wrist band -->
+    <rect x="-9" y="5" width="18" height="5" rx="1" fill="white"/>
+    <rect x="-9" y="6.5" width="18" height="1.5" fill="#c0c0c0" opacity="0.5"/>
+  </g>
+
+  <!-- RIGHT separator: boxing glove + red bar -->
+  <rect x="246" y="147" width="30" height="3.5" fill="#E11919" rx="0.5"/>
+  <rect x="246" y="152" width="30" height="3.5" fill="#E11919" rx="0.5" opacity="0.4"/>
+  <!-- Boxing glove right (mirrored) -->
+  <g transform="translate(262, 137) scale(-1,1)">
+    <ellipse cx="0" cy="0" rx="9" ry="7" fill="white"/>
+    <ellipse cx="7" cy="-3" rx="4" ry="3" fill="white" transform="rotate(30 7 -3)"/>
+    <rect x="-9" y="5" width="18" height="5" rx="1" fill="white"/>
+    <rect x="-9" y="6.5" width="18" height="1.5" fill="#c0c0c0" opacity="0.5"/>
+  </g>
+
+  <!-- ═══ GOAT SILHOUETTE ═══ -->
+  <!-- Body of goat - facing right, white -->
+  <g transform="translate(150, 148) scale(0.72)">
+    <!-- Main body ellipse -->
+    <ellipse cx="0" cy="-10" rx="52" ry="33" fill="white"/>
+
+    <!-- Neck -->
+    <path d="M 25,-28 Q 40,-55 45,-70 Q 48,-80 42,-82 Q 36,-84 33,-74 Q 30,-62 18,-42 Z"
+      fill="white"/>
+
+    <!-- Head -->
+    <ellipse cx="44" cy="-82" rx="16" ry="13" fill="white"/>
+
+    <!-- Snout / muzzle -->
+    <ellipse cx="56" cy="-78" rx="9" ry="7" fill="white"/>
+
+    <!-- Horn - curved backward -->
+    <path d="M 36,-92 Q 22,-108 18,-100 Q 16,-94 28,-86 Z" fill="white"/>
+    <!-- Second horn hint -->
+    <path d="M 42,-94 Q 32,-105 30,-100 Q 29,-96 38,-90 Z" fill="#ddd"/>
+
+    <!-- Ear -->
+    <ellipse cx="30" cy="-86" rx="5" ry="8" fill="white" transform="rotate(-20 30 -86)"/>
+
+    <!-- Beard -->
+    <path d="M 55,-72 Q 60,-60 56,-55 Q 52,-52 50,-58 Q 49,-64 52,-70 Z" fill="white"/>
+
+    <!-- Tail - short, up -->
+    <path d="M -50,-5 Q -62,4 -58,12 Q -54,18 -48,12 Q -44,6 -50,-5 Z" fill="white"/>
+
+    <!-- Front legs -->
+    <rect x="18" y="18" width="11" height="48" rx="5" fill="white"/>
+    <rect x="6" y="18" width="11" height="44" rx="5" fill="white"/>
+    <!-- Hooves front -->
+    <rect x="18" y="60" width="11" height="8" rx="2" fill="#e0e0e0"/>
+    <rect x="6" y="56" width="11" height="8" rx="2" fill="#e0e0e0"/>
+
+    <!-- Back legs -->
+    <rect x="-36" y="14" width="11" height="50" rx="5" fill="white"/>
+    <rect x="-24" y="16" width="11" height="48" rx="5" fill="white"/>
+    <!-- Hooves back -->
+    <rect x="-36" y="57" width="11" height="9" rx="2" fill="#e0e0e0"/>
+    <rect x="-24" y="57" width="11" height="9" rx="2" fill="#e0e0e0"/>
+
+    <!-- Udder -->
+    <ellipse cx="-12" cy="18" rx="9" ry="6" fill="#f0d0d0" opacity="0.8"/>
+  </g>
+
+  <!-- ═══ MARTIAL ARTS BELT (bottom) ═══ -->
+  <!-- Belt body left -->
+  <path d="M 56,234 Q 82,248 118,252 L 118,243 Q 84,240 60,226 Z" fill="white"/>
+  <!-- Belt body right -->
+  <path d="M 244,234 Q 218,248 182,252 L 182,243 Q 216,240 240,226 Z" fill="white"/>
+  <!-- Belt knot center -->
+  <path d="M 118,242 Q 128,236 136,248 Q 140,255 130,258 Q 118,260 115,252 Z" fill="white"/>
+  <path d="M 182,242 Q 172,236 164,248 Q 160,255 170,258 Q 182,260 185,252 Z" fill="white"/>
+  <!-- Center knot overlap -->
+  <path d="M 128,246 Q 138,240 150,243 Q 162,246 172,240 Q 162,256 150,258 Q 138,256 128,246 Z" fill="white"/>
+  <!-- Belt stripe -->
+  <path d="M 62,229 Q 88,244 120,247 L 120,244 Q 88,241 62,226 Z" fill="#d0d0d0" opacity="0.4"/>
+  <path d="M 238,229 Q 212,244 180,247 L 180,244 Q 212,241 238,226 Z" fill="#d0d0d0" opacity="0.4"/>
+
+  <!-- EGYPT text -->
+  <text x="84" y="218" fill="white" font-size="11" font-family="'Arial', sans-serif"
+    font-style="italic" font-weight="bold" text-anchor="middle" letter-spacing="1">EGYPT</text>
+
+  <!-- MMXXIV text -->
+  <text x="216" y="218" fill="white" font-size="11" font-family="'Arial', sans-serif"
+    font-style="italic" font-weight="bold" text-anchor="middle" letter-spacing="1">MMXXIV</text>
+
+  <!-- Red divider dots between EGYPT/MMXXIV and gloves -->
+  <circle cx="108" cy="151" r="2" fill="#E11919"/>
+  <circle cx="192" cy="151" r="2" fill="#E11919"/>
+
+  <!-- Outer vignette overlay for polish -->
+  <radialGradient id="vignette" cx="50%" cy="50%" r="50%">
+    <stop offset="70%" stop-color="transparent"/>
+    <stop offset="100%" stop-color="#000" stop-opacity="0.4"/>
+  </radialGradient>
+  <circle cx="150" cy="150" r="149" fill="url(#vignette)"/>
+</svg>
