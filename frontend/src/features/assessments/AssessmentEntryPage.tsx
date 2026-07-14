@@ -1,11 +1,11 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useLocation } from 'react-router-dom'
 import { studentsService } from '../../services/students.service'
 import { assessmentsService } from '../../services/students.service'
 import { assessmentEntryService } from '../../services/assessments.service'
 import { useToast } from '../../components/ui/Toast'
-import { ChevronDown, ChevronLeft, ChevronRight, Save, User, CheckCircle, AlertCircle } from 'lucide-react'
+import { ChevronDown, ChevronLeft, ChevronRight, Save, User, CheckCircle, AlertCircle, Users } from 'lucide-react'
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -357,76 +357,211 @@ export function AssessmentEntryPage() {
   }
 
   const isCurrentEntry = historyIdx === -1
-  const canGoNewer = historyIdx > -1      // can go toward current
-  const canGoOlder = historyIdx < history.length - 1  // can go deeper into past
+  const canGoNewer = historyIdx > -1
+  const canGoOlder = historyIdx < history.length - 1
+
+  // Sorted student list (alphabetical) for prev/next
+  const sortedStudents = useMemo(() =>
+    [...(students as any[])].sort((a, b) => (a.full_name ?? '').localeCompare(b.full_name ?? '')),
+    [students]
+  )
+
+  // Today's assessed student IDs
+  const { data: todayAssessments = [] } = useQuery({
+    queryKey: ['assessments-today', date],
+    queryFn: () => assessmentsService.list({ date }),
+    refetchInterval: 30000,
+  })
+  const assessedTodayIds = useMemo(() =>
+    new Set((todayAssessments as any[]).map((a: any) => a.student_id ?? a.student)),
+    [todayAssessments]
+  )
+
+  const assessedCount = assessedTodayIds.size
+  const totalCount = sortedStudents.length
+
+  // Prev/Next student navigation
+  const currentIdx = student ? sortedStudents.findIndex((s: any) => s.id === student.id) : -1
+  function goToStudent(s: any) {
+    setStudent(s); setSearch(s.full_name ?? ''); setShowDrop(false)
+    setScores({}); setComments({}); setNotes(''); setPlan('')
+    setSubmitted(false); setHistoryIdx(-1)
+  }
+  const goPrev = () => { if (currentIdx > 0) goToStudent(sortedStudents[currentIdx - 1]) }
+  const goNext = () => { if (currentIdx < sortedStudents.length - 1) goToStudent(sortedStudents[currentIdx + 1]) }
+
+  // Sticky bar visibility
+  const stickyRef = useRef<HTMLDivElement>(null)
+  const bannerRef = useRef<HTMLDivElement>(null)
+  const [showSticky, setShowSticky] = useState(false)
+  useEffect(() => {
+    if (!student) { setShowSticky(false); return }
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowSticky(!entry.isIntersecting),
+      { threshold: 0 }
+    )
+    if (bannerRef.current) observer.observe(bannerRef.current)
+    return () => observer.disconnect()
+  }, [student])
 
   let rowNum = 0
 
   return (
     <div className="space-y-6">
 
+      {showSticky && student && (
+        <div ref={stickyRef} style={{
+          position: 'fixed', top: 56, left: 0, right: 0, zIndex: 40,
+          background: 'rgba(6,6,6,0.96)', borderBottom: '1px solid rgba(225,25,25,0.2)',
+          backdropFilter: 'blur(8px)',
+        }}>
+          <div className="px-8 py-2 flex items-center gap-4 max-w-[1400px] mx-auto">
+            <div className="w-7 h-7 flex items-center justify-center font-display text-sm shrink-0"
+              style={{ background: 'rgba(225,25,25,0.15)', border: '1px solid rgba(225,25,25,0.3)', color: '#E11919' }}>
+              {(student.full_name ?? '?')[0].toUpperCase()}
+            </div>
+            <span className="font-display text-off-white text-sm tracking-wide">{student.full_name}</span>
+            <span style={{ color: 'rgba(155,163,167,0.35)', fontSize: '0.65rem' }}>{student.student_id} · {student.sport}</span>
+            {isCurrentEntry && calc && (
+              <>
+                <div className="h-3 w-px bg-white/10 ml-2" />
+                <span className="font-display text-blood-red text-sm">{calc.grade.toFixed(1)}%</span>
+                <span className="font-display text-xs" style={{ color: LEVEL_COLOR[calc.level] }}>{calc.level}</span>
+              </>
+            )}
+            <div className="ml-auto flex items-center gap-2">
+              <button onClick={goPrev} disabled={currentIdx <= 0}
+                className="flex items-center gap-1 px-2 py-1 text-xs font-display tracking-widest uppercase transition-all"
+                style={{ border: '1px solid rgba(255,255,255,0.08)', color: currentIdx > 0 ? 'rgba(245,245,245,0.7)' : 'rgba(155,163,167,0.2)', background: 'none', cursor: currentIdx > 0 ? 'pointer' : 'default' }}>
+                <ChevronLeft size={11} /> Prev
+              </button>
+              <button onClick={goNext} disabled={currentIdx >= sortedStudents.length - 1}
+                className="flex items-center gap-1 px-2 py-1 text-xs font-display tracking-widest uppercase transition-all"
+                style={{ border: '1px solid rgba(255,255,255,0.08)', color: currentIdx < sortedStudents.length - 1 ? 'rgba(245,245,245,0.7)' : 'rgba(155,163,167,0.2)', background: 'none', cursor: currentIdx < sortedStudents.length - 1 ? 'pointer' : 'default' }}>
+                Next <ChevronRight size={11} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Header ──────────────────────────────────────────────── */}
-      <div>
-        <p style={{ color: 'rgba(225,25,25,0.6)', fontSize: '0.58rem', letterSpacing: '0.4em', textTransform: 'uppercase', marginBottom: 6 }}>
-          Academy Management
-        </p>
-        <h1 className="font-display text-off-white" style={{ fontSize: '2.4rem', letterSpacing: '0.1em', lineHeight: 1 }}>
-          Assessment <span className="text-blood-red">Entry</span>
-        </h1>
-        <div className="mt-2 flex items-center gap-3">
-          <div className="h-[2px] w-10 bg-blood-red" />
-          <span style={{ color: 'rgba(155,163,167,0.38)', fontSize: '0.58rem', letterSpacing: '0.28em', textTransform: 'uppercase' }}>
-            Score a student · all 25 criteria · system auto-calculates final grade
-          </span>
+      <div className="flex items-start justify-between flex-wrap gap-4">
+        <div>
+          <p style={{ color: 'rgba(225,25,25,0.6)', fontSize: '0.58rem', letterSpacing: '0.4em', textTransform: 'uppercase', marginBottom: 6 }}>
+            Academy Management
+          </p>
+          <h1 className="font-display text-off-white" style={{ fontSize: '2.4rem', letterSpacing: '0.1em', lineHeight: 1 }}>
+            Assessment <span className="text-blood-red">Entry</span>
+          </h1>
+          <div className="mt-2 flex items-center gap-3">
+            <div className="h-[2px] w-10 bg-blood-red" />
+            <span style={{ color: 'rgba(155,163,167,0.38)', fontSize: '0.58rem', letterSpacing: '0.28em', textTransform: 'uppercase' }}>
+              Score a student · all 25 criteria · system auto-calculates final grade
+            </span>
+          </div>
         </div>
       </div>
+
+      {/* ── Progress counter ── */}
+      {totalCount > 0 && (
+        <div className="relative overflow-hidden px-5 py-3 flex items-center gap-6"
+          style={{ background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.07)', clipPath: 'polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)' }}>
+          <div className="absolute top-0 left-0 right-0 h-px" style={redLine} />
+          <div className="flex items-center gap-2">
+            <Users size={13} style={{ color: 'rgba(155,163,167,0.4)' }} />
+            <span style={{ color: 'rgba(155,163,167,0.4)', fontSize: '0.5rem', letterSpacing: '0.26em', textTransform: 'uppercase' }}>Today's Progress</span>
+          </div>
+          <div className="flex items-baseline gap-1.5">
+            <span className="font-display text-blood-red" style={{ fontSize: '1.4rem', lineHeight: 1 }}>{assessedCount}</span>
+            <span style={{ color: 'rgba(155,163,167,0.35)', fontSize: '0.75rem' }}>/ {totalCount} students assessed</span>
+          </div>
+          {/* progress bar */}
+          <div className="flex-1 h-1" style={{ background: 'rgba(255,255,255,0.06)' }}>
+            <div className="h-1 transition-all duration-500"
+              style={{ width: `${(assessedCount / totalCount) * 100}%`, background: 'linear-gradient(to right,#E11919,#ff4444)' }} />
+          </div>
+          <span style={{ color: 'rgba(155,163,167,0.3)', fontSize: '0.65rem' }}>
+            {totalCount - assessedCount} remaining
+          </span>
+        </div>
+      )}
 
       {/* ── Student picker + date ────────────────────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
 
-        {/* Student dropdown */}
-        <div className="relative md:col-span-2">
-          <div className="relative overflow-hidden" style={angularCard}>
-            <div className="absolute top-0 left-0 right-0 h-px" style={redLine} />
-            <div className="px-4 py-3">
-              <label style={{ display: 'block', color: 'rgba(155,163,167,0.4)', fontSize: '0.5rem', letterSpacing: '0.26em', textTransform: 'uppercase', marginBottom: 6 }}>Student</label>
-              <div className="flex items-center gap-2">
-                <User size={13} style={{ color: 'rgba(155,163,167,0.3)', flexShrink: 0 }} />
-                <input
-                  value={search}
-                  onChange={e => { setSearch(e.target.value); setShowDrop(true) }}
-                  onFocus={() => setShowDrop(true)}
-                  onBlur={() => setTimeout(() => setShowDrop(false), 150)}
-                  placeholder="Search student by name..."
-                  className="flex-1 bg-transparent text-off-white text-sm outline-none"
-                  style={{ border: 'none' }}
-                />
-                <button
-                  type="button"
-                  onMouseDown={e => { e.preventDefault(); setShowDrop(v => !v) }}
-                  className="p-1 transition-colors"
-                  style={{ color: showDrop ? '#E11919' : 'rgba(155,163,167,0.3)', background: 'none', border: 'none', cursor: 'pointer' }}>
-                  <ChevronDown size={14} style={{ transform: showDrop ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }} />
-                </button>
+        {/* Student dropdown + prev/next */}
+        <div className="relative md:col-span-2 flex gap-2">
+          {/* Prev button */}
+          <button onClick={goPrev} disabled={currentIdx <= 0}
+            title={currentIdx > 0 ? `← ${sortedStudents[currentIdx - 1]?.full_name}` : ''}
+            className="flex items-center justify-center shrink-0 px-3 transition-all"
+            style={{ background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.07)', color: currentIdx > 0 ? 'rgba(245,245,245,0.7)' : 'rgba(155,163,167,0.18)', cursor: currentIdx > 0 ? 'pointer' : 'default', clipPath: 'polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,0 100%)' }}
+            onMouseEnter={e => { if (currentIdx > 0) (e.currentTarget as HTMLElement).style.borderColor = 'rgba(225,25,25,0.4)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.07)' }}>
+            <ChevronLeft size={16} />
+          </button>
+
+          {/* Dropdown */}
+          <div className="relative flex-1">
+            <div className="relative overflow-hidden" style={angularCard}>
+              <div className="absolute top-0 left-0 right-0 h-px" style={redLine} />
+              <div className="px-4 py-3">
+                <label style={{ display: 'block', color: 'rgba(155,163,167,0.4)', fontSize: '0.5rem', letterSpacing: '0.26em', textTransform: 'uppercase', marginBottom: 6 }}>Student</label>
+                <div className="flex items-center gap-2">
+                  <User size={13} style={{ color: 'rgba(155,163,167,0.3)', flexShrink: 0 }} />
+                  <input
+                    value={search}
+                    onChange={e => { setSearch(e.target.value); setShowDrop(true) }}
+                    onFocus={() => setShowDrop(true)}
+                    onBlur={() => setTimeout(() => setShowDrop(false), 150)}
+                    placeholder="Search student by name..."
+                    className="flex-1 bg-transparent text-off-white text-sm outline-none"
+                    style={{ border: 'none' }}
+                  />
+                  <button
+                    type="button"
+                    onMouseDown={e => { e.preventDefault(); setShowDrop(v => !v) }}
+                    className="p-1 transition-colors"
+                    style={{ color: showDrop ? '#E11919' : 'rgba(155,163,167,0.3)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                    <ChevronDown size={14} style={{ transform: showDrop ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }} />
+                  </button>
+                </div>
               </div>
             </div>
+
+            {showDrop && filteredStudents.length > 0 && (
+              <div className="absolute z-50 left-0 right-0 mt-1 max-h-64 overflow-y-auto"
+                style={{ background: '#111', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.7)' }}>
+                {filteredStudents.map((s: any) => {
+                  const done = assessedTodayIds.has(s.id)
+                  return (
+                    <button key={s.id} onMouseDown={() => pickStudent(s)}
+                      className="w-full text-left flex items-center gap-3 px-4 py-2.5 transition-colors"
+                      style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(225,25,25,0.07)' }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '' }}>
+                      {/* assessed indicator */}
+                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: done ? '#34d399' : 'rgba(225,25,25,0.5)', flexShrink: 0, display: 'inline-block' }} />
+                      <span className="text-off-white text-sm flex-1">{s.full_name}</span>
+                      <span style={{ color: 'rgba(155,163,167,0.4)', fontSize: '0.65rem' }}>{s.student_id} · {s.sport}</span>
+                      {done && <CheckCircle size={11} style={{ color: '#34d399', flexShrink: 0 }} />}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
           </div>
 
-          {showDrop && filteredStudents.length > 0 && (
-            <div className="absolute z-50 left-0 right-0 mt-1 max-h-64 overflow-y-auto"
-              style={{ background: '#111', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.7)' }}>
-              {filteredStudents.map((s: any) => (
-                <button key={s.id} onMouseDown={() => pickStudent(s)}
-                  className="w-full text-left flex items-center justify-between px-4 py-2.5 transition-colors"
-                  style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(225,25,25,0.07)' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '' }}>
-                  <span className="text-off-white text-sm">{s.full_name}</span>
-                  <span style={{ color: 'rgba(155,163,167,0.4)', fontSize: '0.65rem' }}>{s.student_id} · {s.sport}</span>
-                </button>
-              ))}
-            </div>
-          )}
+          {/* Next button */}
+          <button onClick={goNext} disabled={currentIdx >= sortedStudents.length - 1}
+            title={currentIdx >= 0 && currentIdx < sortedStudents.length - 1 ? `${sortedStudents[currentIdx + 1]?.full_name} →` : ''}
+            className="flex items-center justify-center shrink-0 px-3 transition-all"
+            style={{ background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.07)', color: currentIdx >= 0 && currentIdx < sortedStudents.length - 1 ? 'rgba(245,245,245,0.7)' : 'rgba(155,163,167,0.18)', cursor: currentIdx >= 0 && currentIdx < sortedStudents.length - 1 ? 'pointer' : 'default', clipPath: 'polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,0 100%)' }}
+            onMouseEnter={e => { if (currentIdx >= 0 && currentIdx < sortedStudents.length - 1) (e.currentTarget as HTMLElement).style.borderColor = 'rgba(225,25,25,0.4)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.07)' }}>
+            <ChevronRight size={16} />
+          </button>
         </div>
 
         {/* Date (read-only display) */}
@@ -445,7 +580,7 @@ export function AssessmentEntryPage() {
 
       {/* ── Student banner ───────────────────────────────────────── */}
       {student && (
-        <div className="relative overflow-hidden flex flex-wrap items-center gap-6 px-5 py-4"
+        <div ref={bannerRef} className="relative overflow-hidden flex flex-wrap items-center gap-6 px-5 py-4"
           style={{ background: 'rgba(225,25,25,0.04)', border: '1px solid rgba(225,25,25,0.15)', clipPath: 'polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px))' }}>
           <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: 'linear-gradient(to bottom,#E11919,transparent)' }} />
           <div className="w-9 h-9 flex items-center justify-center font-display text-lg shrink-0"
@@ -454,7 +589,11 @@ export function AssessmentEntryPage() {
           </div>
           <div>
             <p className="font-display text-off-white">{student.full_name}</p>
-            <p style={{ color: 'rgba(155,163,167,0.4)', fontSize: '0.65rem' }}>{student.student_id} · {student.sport}</p>
+            <p style={{ color: 'rgba(155,163,167,0.4)', fontSize: '0.65rem' }}>{student.student_id} · {student.sport}
+              {assessedTodayIds.has(student.id) && (
+                <span style={{ marginLeft: 10, color: '#34d399' }}>✓ assessed today</span>
+              )}
+            </p>
           </div>
           <div className="ml-auto flex items-center gap-8">
             <div className="text-center">
@@ -475,6 +614,26 @@ export function AssessmentEntryPage() {
                 <p className="font-display text-sm" style={{ color: LEVEL_COLOR[calc.level] }}>{calc.level}</p>
               </div>
             )}
+            {/* Prev / Next in banner */}
+            <div className="flex items-center gap-2">
+              <button onClick={goPrev} disabled={currentIdx <= 0}
+                title={currentIdx > 0 ? `← ${sortedStudents[currentIdx - 1]?.full_name}` : ''}
+                className="flex items-center gap-1 px-3 py-1.5 font-display text-xs tracking-widest uppercase transition-all"
+                style={{ border: '1px solid rgba(255,255,255,0.08)', color: currentIdx > 0 ? 'rgba(245,245,245,0.7)' : 'rgba(155,163,167,0.2)', background: 'none', cursor: currentIdx > 0 ? 'pointer' : 'default' }}
+                onMouseEnter={e => { if (currentIdx > 0) (e.currentTarget as HTMLElement).style.borderColor = 'rgba(225,25,25,0.3)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)' }}>
+                <ChevronLeft size={12} /> Prev
+              </button>
+              <span style={{ color: 'rgba(155,163,167,0.3)', fontSize: '0.6rem' }}>{currentIdx + 1}/{sortedStudents.length}</span>
+              <button onClick={goNext} disabled={currentIdx >= sortedStudents.length - 1}
+                title={currentIdx >= 0 && currentIdx < sortedStudents.length - 1 ? `${sortedStudents[currentIdx + 1]?.full_name} →` : ''}
+                className="flex items-center gap-1 px-3 py-1.5 font-display text-xs tracking-widest uppercase transition-all"
+                style={{ border: '1px solid rgba(255,255,255,0.08)', color: currentIdx >= 0 && currentIdx < sortedStudents.length - 1 ? 'rgba(245,245,245,0.7)' : 'rgba(155,163,167,0.2)', background: 'none', cursor: currentIdx >= 0 && currentIdx < sortedStudents.length - 1 ? 'pointer' : 'default' }}
+                onMouseEnter={e => { if (currentIdx >= 0 && currentIdx < sortedStudents.length - 1) (e.currentTarget as HTMLElement).style.borderColor = 'rgba(225,25,25,0.3)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)' }}>
+                Next <ChevronRight size={12} />
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -711,6 +870,47 @@ export function AssessmentEntryPage() {
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}>
               <Save size={13} />
               {submitMutation.isPending ? 'Saving...' : 'Submit Assessment'}
+            </button>
+          </div>
+
+          {/* ── Post-submit Prev / Next navigation ── */}
+          <div className="flex items-center justify-between gap-3 pt-1">
+            <button onClick={goPrev} disabled={currentIdx <= 0}
+              className="flex items-center gap-3 px-5 py-3 flex-1 transition-all"
+              style={{
+                background: '#0d0d0d', border: `1px solid ${currentIdx > 0 ? 'rgba(225,25,25,0.25)' : 'rgba(255,255,255,0.05)'}`,
+                color: currentIdx > 0 ? 'rgba(245,245,245,0.75)' : 'rgba(155,163,167,0.2)',
+                cursor: currentIdx > 0 ? 'pointer' : 'default',
+                clipPath: 'polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%)',
+              }}
+              onMouseEnter={e => { if (currentIdx > 0) { const el = e.currentTarget as HTMLElement; el.style.borderColor = 'rgba(225,25,25,0.5)'; el.style.background = 'rgba(225,25,25,0.05)' } }}
+              onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = currentIdx > 0 ? 'rgba(225,25,25,0.25)' : 'rgba(255,255,255,0.05)'; el.style.background = '#0d0d0d' }}>
+              <ChevronLeft size={16} style={{ flexShrink: 0 }} />
+              <div className="text-left min-w-0">
+                <p style={{ color: 'rgba(155,163,167,0.35)', fontSize: '0.48rem', letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 2 }}>Previous Student</p>
+                <p className="font-display text-sm truncate">{currentIdx > 0 ? sortedStudents[currentIdx - 1]?.full_name : '—'}</p>
+              </div>
+            </button>
+
+            <div style={{ color: 'rgba(155,163,167,0.25)', fontSize: '0.65rem', flexShrink: 0 }}>
+              {student ? `${currentIdx + 1} / ${sortedStudents.length}` : '—'}
+            </div>
+
+            <button onClick={goNext} disabled={currentIdx < 0 || currentIdx >= sortedStudents.length - 1}
+              className="flex items-center justify-end gap-3 px-5 py-3 flex-1 transition-all"
+              style={{
+                background: '#0d0d0d', border: `1px solid ${currentIdx >= 0 && currentIdx < sortedStudents.length - 1 ? 'rgba(225,25,25,0.25)' : 'rgba(255,255,255,0.05)'}`,
+                color: currentIdx >= 0 && currentIdx < sortedStudents.length - 1 ? 'rgba(245,245,245,0.75)' : 'rgba(155,163,167,0.2)',
+                cursor: currentIdx >= 0 && currentIdx < sortedStudents.length - 1 ? 'pointer' : 'default',
+                clipPath: 'polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%)',
+              }}
+              onMouseEnter={e => { if (currentIdx >= 0 && currentIdx < sortedStudents.length - 1) { const el = e.currentTarget as HTMLElement; el.style.borderColor = 'rgba(225,25,25,0.5)'; el.style.background = 'rgba(225,25,25,0.05)' } }}
+              onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = currentIdx >= 0 && currentIdx < sortedStudents.length - 1 ? 'rgba(225,25,25,0.25)' : 'rgba(255,255,255,0.05)'; el.style.background = '#0d0d0d' }}>
+              <div className="text-right min-w-0">
+                <p style={{ color: 'rgba(155,163,167,0.35)', fontSize: '0.48rem', letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 2 }}>Next Student</p>
+                <p className="font-display text-sm truncate">{currentIdx >= 0 && currentIdx < sortedStudents.length - 1 ? sortedStudents[currentIdx + 1]?.full_name : '—'}</p>
+              </div>
+              <ChevronRight size={16} style={{ flexShrink: 0 }} />
             </button>
           </div>
 

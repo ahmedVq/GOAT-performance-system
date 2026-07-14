@@ -1,8 +1,10 @@
+from django.db import transaction
 from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from accounts.permissions import IsAdmin, IsAdminOrOwner
 from core.responses import success_response, error_response, created_response
+from assessments.models import AssessmentSession, CriterionScore, PillarScore, CoachEntry
 from assessments.services import get_student_progress
 from .models import Branch, Student
 from .serializers import BranchSerializer, StudentSerializer, CreateStudentSerializer, UpdateStudentSerializer
@@ -99,6 +101,28 @@ class StudentDetailView(APIView):
             return error_response('Student not found.', status_code=404)
         deactivate_student(student)
         return success_response(message=f'Student {student.student_id} deactivated.')
+
+
+class StudentHardDeleteView(APIView):
+    """Permanently delete a student and all their assessment history."""
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def delete(self, request, pk):
+        try:
+            student = Student.objects.select_related('user').get(pk=pk)
+        except Student.DoesNotExist:
+            return error_response('Student not found.', status_code=404)
+
+        user = student.user
+        with transaction.atomic():
+            sessions = AssessmentSession.objects.filter(student=student)
+            CriterionScore.objects.filter(session__in=sessions).delete()
+            PillarScore.objects.filter(session__in=sessions).delete()
+            sessions.delete()
+            CoachEntry.objects.filter(student=student).delete()
+            student.delete()
+            user.delete()
+        return success_response(message='Student permanently deleted.')
 
 
 class StudentMeView(APIView):

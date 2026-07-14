@@ -25,6 +25,9 @@ class AssessmentListView(APIView):
         martial_art = request.query_params.get('martial_art')
         if martial_art:
             qs = qs.filter(martial_art=martial_art)
+        date = request.query_params.get('date')
+        if date:
+            qs = qs.filter(assessment_date=date)
         return success_response(data=AssessmentListSerializer(qs[:50], many=True).data)
 
 

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
@@ -9,7 +10,7 @@ import { StatCard } from '../../components/ui/StatCard'
 import { Badge } from '../../components/ui/Badge'
 import { LoadingSkeleton } from '../../components/ui/LoadingSkeleton'
 import { useToast } from '../../components/ui/Toast'
-import { ArrowLeft, UserX, ClipboardList, Award, TrendingUp, Plus, ChevronRight } from 'lucide-react'
+import { ArrowLeft, UserX, Trash2, ClipboardList, Award, TrendingUp, Plus, ChevronRight } from 'lucide-react'
 
 const C = {
   tooltip: { background: '#0D0D0D', border: '1px solid rgba(225,25,25,0.2)', borderRadius: 0, fontSize: 12 },
@@ -45,11 +46,63 @@ function SectionTitle({ title }: { title: string }) {
   )
 }
 
+function DeleteConfirmModal({ name, onConfirm, onCancel, loading }: {
+  name: string; onConfirm: () => void; onCancel: () => void; loading: boolean
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(6px)' }}>
+      <div className="relative w-full max-w-md"
+        style={{ background: 'linear-gradient(145deg,#0f0606,#0a0303)', border: '1px solid rgba(225,25,25,0.3)', clipPath: 'polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%)' }}>
+        <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(to right,#E11919,rgba(225,25,25,0.2) 50%,transparent)' }} />
+        <div className="absolute top-0 left-0 bottom-0 w-px" style={{ background: 'linear-gradient(to bottom,#E11919,transparent 60%)' }} />
+        <div className="p-6 space-y-5">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 flex items-center justify-center shrink-0"
+              style={{ background: 'rgba(225,25,25,0.12)', border: '1px solid rgba(225,25,25,0.3)' }}>
+              <Trash2 size={18} className="text-blood-red" />
+            </div>
+            <div>
+              <h3 className="font-display text-off-white text-lg tracking-wide">Delete Student</h3>
+              <p className="text-steel-gray text-xs mt-1 leading-relaxed">
+                This will permanently delete <span className="text-off-white font-medium">{name}</span> and all their data.
+                This action <span className="text-blood-red">cannot be undone</span>.
+              </p>
+            </div>
+          </div>
+          <div className="p-3 text-xs" style={{ background: 'rgba(225,25,25,0.06)', border: '1px solid rgba(225,25,25,0.15)' }}>
+            <p style={{ color: 'rgba(225,25,25,0.7)', letterSpacing: '0.06em' }}>
+              ⚠ All assessment history, scores, and records will be permanently erased.
+            </p>
+          </div>
+          <div className="flex gap-3 pt-1">
+            <button onClick={onCancel} disabled={loading}
+              className="flex-1 py-2.5 text-xs uppercase tracking-widest font-display transition-all"
+              style={{ border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(155,163,167,0.6)', background: 'rgba(255,255,255,0.02)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.2)'; (e.currentTarget as HTMLElement).style.color = '#F5F5F5' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)'; (e.currentTarget as HTMLElement).style.color = 'rgba(155,163,167,0.6)' }}>
+              Cancel
+            </button>
+            <button onClick={onConfirm} disabled={loading}
+              className="flex-1 py-2.5 text-xs uppercase tracking-widest font-display text-white transition-all disabled:opacity-50"
+              style={{ background: 'linear-gradient(135deg,#E11919,#B90F16)', clipPath: 'polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 0 24px rgba(225,25,25,0.45)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}>
+              {loading ? 'Deleting…' : 'Delete Permanently'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function StudentDetailPage() {
   const { id }     = useParams<{ id: string }>()
   const navigate   = useNavigate()
   const qc         = useQueryClient()
   const { toast }  = useToast()
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
 
   const { data: student, isLoading: loadingStudent } = useQuery({
     queryKey: ['student', id],
@@ -70,6 +123,16 @@ export function StudentDetailPage() {
       toast('Student deactivated')
     },
     onError: () => toast('Failed to deactivate', 'error'),
+  })
+
+  const hardDeleteMutation = useMutation({
+    mutationFn: () => studentsService.hardDelete(id!),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['students'] })
+      toast('Student permanently deleted')
+      navigate('/admin/students')
+    },
+    onError: () => toast('Failed to delete student', 'error'),
   })
 
   if (loadingStudent) return <LoadingSkeleton rows={8} />
@@ -170,16 +233,27 @@ export function StudentDetailPage() {
             )}
           </div>
 
-          {/* Deactivate */}
-          {s?.is_active && (
-            <button onClick={() => { if (confirm('Deactivate this student?')) deactivateMutation.mutate() }}
-              className="self-start flex items-center gap-1.5 transition-colors duration-200"
-              style={{ color: 'rgba(155,163,167,0.35)', fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase', background: 'none', border: 'none', cursor: 'pointer' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#E11919' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(155,163,167,0.35)' }}>
-              <UserX size={12} /> Deactivate
+          {/* Actions */}
+          <div className="self-start flex flex-col gap-2 ml-auto">
+            {s?.is_active && (
+              <button
+                onClick={() => { if (confirm('Deactivate this student?')) deactivateMutation.mutate() }}
+                className="flex items-center gap-2 font-display text-xs tracking-[0.16em] uppercase px-4 py-2 transition-all duration-200"
+                style={{ border: '1px solid rgba(155,163,167,0.2)', color: 'rgba(155,163,167,0.7)', background: 'rgba(155,163,167,0.04)', cursor: 'pointer', minWidth: 130 }}
+                onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = 'rgba(225,25,25,0.5)'; el.style.color = '#E11919'; el.style.background = 'rgba(225,25,25,0.08)' }}
+                onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = 'rgba(155,163,167,0.2)'; el.style.color = 'rgba(155,163,167,0.7)'; el.style.background = 'rgba(155,163,167,0.04)' }}>
+                <UserX size={13} /> Deactivate
+              </button>
+            )}
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="flex items-center gap-2 font-display text-xs tracking-[0.16em] uppercase px-4 py-2 transition-all duration-200"
+              style={{ border: '1px solid rgba(225,25,25,0.35)', color: '#E11919', background: 'rgba(225,25,25,0.08)', cursor: 'pointer', minWidth: 130 }}
+              onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'rgba(225,25,25,0.18)'; el.style.borderColor = 'rgba(225,25,25,0.7)'; el.style.boxShadow = '0 0 16px rgba(225,25,25,0.2)' }}
+              onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'rgba(225,25,25,0.08)'; el.style.borderColor = 'rgba(225,25,25,0.35)'; el.style.boxShadow = 'none' }}>
+              <Trash2 size={13} /> Delete Student
             </button>
-          )}
+          </div>
         </div>
       </div>
 
@@ -305,6 +379,15 @@ export function StudentDetailPage() {
             </table>
           </div>
         </Card>
+      )}
+
+      {showDeleteModal && (
+        <DeleteConfirmModal
+          name={s?.full_name ?? s?.user?.full_name ?? 'this student'}
+          loading={hardDeleteMutation.isPending}
+          onConfirm={() => hardDeleteMutation.mutate()}
+          onCancel={() => setShowDeleteModal(false)}
+        />
       )}
     </div>
   )
