@@ -449,7 +449,7 @@ export function AssessmentEntryPage() {
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
           <p style={{ color: 'rgba(225,25,25,0.6)', fontSize: '0.58rem', letterSpacing: '0.4em', textTransform: 'uppercase', marginBottom: 6 }}>
-            Academy Management
+            Management
           </p>
           <h1 className="font-display text-off-white" style={{ fontSize: '2.4rem', letterSpacing: '0.1em', lineHeight: 1 }}>
             Assessment <span className="text-blood-red">Entry</span>

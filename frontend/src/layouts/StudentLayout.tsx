@@ -5,6 +5,7 @@ import {
   LayoutDashboard, TrendingUp, ClipboardList, Trophy, User, LogOut, Menu, X, ChevronRight,
 } from 'lucide-react'
 import { LiveClock } from '../components/ui/LiveClock'
+import { ChatBot } from '../components/ui/ChatBot'
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', end: true },
@@ -130,6 +131,7 @@ export function StudentLayout() {
           </div>
         </main>
       </div>
+      <ChatBot />
     </div>
   )
 }

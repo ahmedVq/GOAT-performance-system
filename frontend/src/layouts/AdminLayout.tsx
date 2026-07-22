@@ -6,6 +6,7 @@ import {
   Trophy, Settings, LogOut, Menu, X, ChevronRight,
 } from 'lucide-react'
 import { LiveClock } from '../components/ui/LiveClock'
+import { ChatBot } from '../components/ui/ChatBot'
 
 const navItems = [
   { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', end: true },
@@ -155,6 +156,7 @@ export function AdminLayout() {
           </div>
         </main>
       </div>
+      <ChatBot />
     </div>
   )
 }

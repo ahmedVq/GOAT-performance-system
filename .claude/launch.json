@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "goat-backend",
+      "runtimeExecutable": "E:/GOAT/Development/backend/.venv/Scripts/python.exe",
+      "runtimeArgs": ["manage.py", "runserver", "0.0.0.0:8000"],
+      "cwd": "E:/GOAT/Development/backend",
+      "port": 8000
+    },
+    {
+      "name": "goat-frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "5173"],
+      "cwd": "E:/GOAT/Development/frontend",
+      "port": 5173
+    }
+  ]
+}

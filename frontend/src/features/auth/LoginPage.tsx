@@ -256,7 +256,7 @@ export function LoginPage() {
           />
         </div>
 
-        {/* Flanking lines + Academy label */}
+        {/* Flanking lines + label */}
         <div className="flex items-center gap-0 mt-2" style={{ width: 320 }}>
           <div style={{
             flex: 1, height: 1,
@@ -275,7 +275,7 @@ export function LoginPage() {
             animation: go ? 'fade-up-soft 0.45s ease forwards 1.6s' : 'none',
             opacity: 0,
           }}>
-            Martial Arts Academy
+            Martial Arts
           </span>
           <div style={{
             flex: 1, height: 1,
@@ -361,7 +361,7 @@ export function LoginPage() {
         <div className="flex items-center gap-3 mt-3 mb-4" style={{ width: 280 }}>
           <div className="flex-1 h-px" style={{ background:'linear-gradient(to right,transparent,rgba(225,25,25,0.38))' }} />
           <span style={{ color:'rgba(155,163,167,0.34)', fontSize:'0.56rem', letterSpacing:'0.46em', textTransform:'uppercase', whiteSpace:'nowrap' }}>
-            Martial Arts Academy
+            Martial Arts
           </span>
           <div className="flex-1 h-px" style={{ background:'linear-gradient(to left,transparent,rgba(225,25,25,0.38))' }} />
         </div>
@@ -370,7 +370,7 @@ export function LoginPage() {
         <div className="w-full" style={{ animation: phase==='form' ? 'form-rise 0.65s ease 0.22s both' : 'none' }}>
           <div className="mb-4">
             <p style={{ color:'rgba(225,25,25,0.58)', fontSize:'0.57rem', letterSpacing:'0.42em', textTransform:'uppercase', marginBottom:8 }}>
-              Academy Portal
+              Member Portal
             </p>
             <h2 className="text-off-white font-display" style={{ fontSize:'2.2rem', letterSpacing:'0.12em', lineHeight:1 }}>
               Sign In
@@ -394,7 +394,7 @@ export function LoginPage() {
                 <label style={{ display:'block', color:'rgba(155,163,167,0.5)', fontSize:'0.57rem', letterSpacing:'0.3em', textTransform:'uppercase' }}>
                   Email Address
                 </label>
-                <input {...register('email')} type="email" autoComplete="email" placeholder="coach@goatacademy.com"
+                <input {...register('email')} type="email" autoComplete="email" placeholder="coach@goat.com"
                   className="w-full text-off-white text-sm px-4 py-2.5 outline-none placeholder:text-white/10 transition-all duration-300"
                   style={{ background:'rgba(255,255,255,0.025)', borderBottom:'1px solid rgba(255,255,255,0.08)', borderTop:'none', borderLeft:'none', borderRight:'none' }}
                   onFocus={e => { e.currentTarget.style.borderBottomColor='#E11919'; e.currentTarget.style.background='rgba(225,25,25,0.04)' }}
@@ -432,7 +432,7 @@ export function LoginPage() {
                 >
                   <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
                     style={{ background:'linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.13) 50%,transparent 70%)' }} />
-                  <span className="relative">{isSubmitting ? 'Signing in…' : 'Enter the Academy'}</span>
+                  <span className="relative">{isSubmitting ? 'Signing in…' : 'Enter the System'}</span>
                 </button>
               </div>
             </div>
