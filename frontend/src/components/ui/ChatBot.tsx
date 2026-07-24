@@ -346,7 +346,7 @@ export function ChatBot() {
         {hasUnread && !open && (
           <span aria-hidden="true" style={{
             position: 'absolute', top: 1, right: 1, width: 14, height: 14, borderRadius: '50%',
-            background: '#E11919', border: '2px solid #050505', boxShadow: '0 0 8px rgba(225,25,25,0.9)',
+            background: '#E11919', border: '2px solid rgb(var(--c-bg-base))', boxShadow: '0 0 8px rgba(225,25,25,0.9)',
           }} />
         )}
       </button>
@@ -356,7 +356,7 @@ export function ChatBot() {
         <div className="chat-panel-glow" style={{
           position: 'fixed', bottom: 96, right: 28, zIndex: 998,
           width: panelWidth, height: panelHeight,
-          background: '#0a0a0a',
+          background: 'rgb(var(--c-bg-surface))',
           border: '1.5px solid rgba(225,25,25,0.35)',
           display: 'flex', flexDirection: 'column',
           clipPath: 'polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)',
@@ -365,15 +365,15 @@ export function ChatBot() {
 
           {/* Header */}
           <div style={{
-            padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)',
-            background: '#0f0f0f',
+            padding: '12px 16px', borderBottom: '1px solid rgb(var(--c-overlay) / calc(0.06 * var(--c-ovl-mult)))',
+            background: 'rgb(var(--c-bg-header))',
             display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0,
           }}>
             {view === 'history' ? (
               <button onClick={() => setView('chat')} title="Back to chat" aria-label="Back to chat"
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(155,163,167,0.6)', padding: 4, display: 'flex' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#F5F5F5' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(155,163,167,0.6)' }}>
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgb(var(--c-text-secondary) / calc(0.6 * var(--c-sec-mult)))', padding: 4, display: 'flex' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'rgb(var(--c-text-primary))' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgb(var(--c-text-secondary) / calc(0.6 * var(--c-sec-mult)))' }}>
                 <ArrowLeft size={16} />
               </button>
             ) : (
@@ -382,44 +382,44 @@ export function ChatBot() {
                 <span style={{
                   position: 'absolute', bottom: 0, right: 0,
                   width: 9, height: 9, borderRadius: '50%',
-                  background: '#34d399', border: '2px solid #0f0f0f',
+                  background: '#34d399', border: '2px solid rgb(var(--c-bg-header))',
                 }} />
               </div>
             )}
             <div style={{ flex: 1 }}>
-              <p style={{ color: '#F5F5F5', fontSize: '0.8rem', fontWeight: 600, margin: 0 }}>
+              <p style={{ color: 'rgb(var(--c-text-primary))', fontSize: '0.8rem', fontWeight: 600, margin: 0 }}>
                 {view === 'history' ? 'History' : 'Box'}
               </p>
-              <p style={{ color: 'rgba(155,163,167,0.45)', fontSize: '0.58rem', margin: 0 }}>
+              <p style={{ color: 'rgb(var(--c-text-secondary) / calc(0.45 * var(--c-sec-mult)))', fontSize: '0.58rem', margin: 0 }}>
                 {view === 'history' ? `${conversations.length} conversation${conversations.length === 1 ? '' : 's'}` : 'Undefeated in the AI Realm'}
               </p>
             </div>
             {view === 'chat' && (
               <>
                 <button onClick={() => setExpanded(v => !v)} title={expanded ? 'Collapse' : 'Expand'} aria-label={expanded ? 'Collapse chat panel' : 'Expand chat panel'}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(155,163,167,0.35)', padding: 4 }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#F5F5F5' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(155,163,167,0.35)' }}>
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgb(var(--c-text-secondary) / calc(0.35 * var(--c-sec-mult)))', padding: 4 }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'rgb(var(--c-text-primary))' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgb(var(--c-text-secondary) / calc(0.35 * var(--c-sec-mult)))' }}>
                   {expanded ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
                 </button>
                 <button onClick={() => setView('history')} title="History" aria-label="View conversation history"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(155,163,167,0.35)', padding: 4 }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#F5F5F5' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(155,163,167,0.35)' }}>
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgb(var(--c-text-secondary) / calc(0.35 * var(--c-sec-mult)))', padding: 4 }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'rgb(var(--c-text-primary))' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgb(var(--c-text-secondary) / calc(0.35 * var(--c-sec-mult)))' }}>
                   <History size={13} />
                 </button>
                 <button onClick={newChat} title="New chat" aria-label="Start new chat"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(155,163,167,0.35)', padding: 4 }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgb(var(--c-text-secondary) / calc(0.35 * var(--c-sec-mult)))', padding: 4 }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#fbbf24' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(155,163,167,0.35)' }}>
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgb(var(--c-text-secondary) / calc(0.35 * var(--c-sec-mult)))' }}>
                   <MessageSquarePlus size={14} />
                 </button>
               </>
             )}
             <button onClick={() => setOpen(false)} title="Close" aria-label="Close chat"
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(155,163,167,0.35)', padding: 4 }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgb(var(--c-text-secondary) / calc(0.35 * var(--c-sec-mult)))', padding: 4 }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#E11919' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(155,163,167,0.35)' }}>
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgb(var(--c-text-secondary) / calc(0.35 * var(--c-sec-mult)))' }}>
               <X size={15} />
             </button>
           </div>
@@ -435,7 +435,7 @@ export function ChatBot() {
                   width: '100%', display: 'flex', alignItems: 'center', gap: 8,
                   padding: '11px 12px', marginBottom: 16, cursor: 'pointer',
                   background: 'rgba(225,25,25,0.05)', border: '1px dashed rgba(225,25,25,0.4)',
-                  color: '#F5F5F5', fontSize: '0.72rem', fontWeight: 600,
+                  color: 'rgb(var(--c-text-primary))', fontSize: '0.72rem', fontWeight: 600,
                   clipPath: 'polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%)',
                 }}
               >
@@ -451,8 +451,8 @@ export function ChatBot() {
                   }}>
                     <History size={20} style={{ color: 'rgba(225,25,25,0.5)' }} />
                   </div>
-                  <p style={{ color: 'rgba(245,245,245,0.6)', fontSize: '0.74rem', margin: 0 }}>No conversations yet</p>
-                  <p style={{ color: 'rgba(155,163,167,0.4)', fontSize: '0.64rem', margin: '4px 0 0' }}>
+                  <p style={{ color: 'rgb(var(--c-text-primary) / 0.6)', fontSize: '0.74rem', margin: 0 }}>No conversations yet</p>
+                  <p style={{ color: 'rgb(var(--c-text-secondary) / calc(0.4 * var(--c-sec-mult)))', fontSize: '0.64rem', margin: '4px 0 0' }}>
                     Start chatting with Box to build your history here.
                   </p>
                 </div>
@@ -462,7 +462,7 @@ export function ChatBot() {
                   return conversationGroups.map(group => (
                     <div key={group.label} style={{ marginBottom: 16 }}>
                       <p style={{
-                        color: 'rgba(155,163,167,0.4)', fontSize: '0.58rem', letterSpacing: '0.22em',
+                        color: 'rgb(var(--c-text-secondary) / calc(0.4 * var(--c-sec-mult)))', fontSize: '0.58rem', letterSpacing: '0.22em',
                         textTransform: 'uppercase', margin: '0 0 6px 4px',
                       }}>
                         {group.label}
@@ -477,8 +477,8 @@ export function ChatBot() {
                             style={{
                               position: 'relative', display: 'flex', alignItems: 'center', gap: 10,
                               padding: '10px 12px 10px 14px', marginBottom: 6, cursor: 'pointer', overflow: 'hidden',
-                              background: c.id === activeId ? 'rgba(225,25,25,0.09)' : 'rgba(255,255,255,0.02)',
-                              border: `1px solid ${c.id === activeId ? 'rgba(225,25,25,0.3)' : 'rgba(255,255,255,0.05)'}`,
+                              background: c.id === activeId ? 'rgba(225,25,25,0.09)' : 'rgb(var(--c-overlay) / calc(0.02 * var(--c-ovl-mult)))',
+                              border: `1px solid ${c.id === activeId ? 'rgba(225,25,25,0.3)' : 'rgb(var(--c-overlay) / calc(0.05 * var(--c-ovl-mult)))'}`,
                               clipPath: 'polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%)',
                               animation: `historyItemIn 0.25s ease both`,
                               animationDelay: `${delay}ms`,
@@ -486,7 +486,7 @@ export function ChatBot() {
                           >
                             <div style={{
                               position: 'absolute', left: 0, top: 0, bottom: 0, width: 3,
-                              background: c.id === activeId ? 'linear-gradient(to bottom,#E11919,#7C0D12)' : 'rgba(255,255,255,0.08)',
+                              background: c.id === activeId ? 'linear-gradient(to bottom,#E11919,#7C0D12)' : 'rgb(var(--c-overlay) / calc(0.08 * var(--c-ovl-mult)))',
                             }} />
                             <div style={{
                               width: 26, height: 26, borderRadius: '50%', flexShrink: 0,
@@ -495,10 +495,10 @@ export function ChatBot() {
                               <MessageSquare size={12} style={{ color: '#E11919' }} />
                             </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
-                              <p style={{ color: '#F5F5F5', fontSize: '0.73rem', fontWeight: 500, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              <p style={{ color: 'rgb(var(--c-text-primary))', fontSize: '0.73rem', fontWeight: 500, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                 {c.title || 'New chat'}
                               </p>
-                              <p style={{ color: 'rgba(155,163,167,0.4)', fontSize: '0.6rem', margin: '2px 0 0' }}>
+                              <p style={{ color: 'rgb(var(--c-text-secondary) / calc(0.4 * var(--c-sec-mult)))', fontSize: '0.6rem', margin: '2px 0 0' }}>
                                 {timeAgo(c.updatedAt)} · {c.messages.length} messages
                               </p>
                             </div>
@@ -507,9 +507,9 @@ export function ChatBot() {
                               title="Delete conversation"
                               aria-label={`Delete conversation: ${c.title || 'New chat'}`}
                               className="chat-history-delete"
-                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(155,163,167,0.35)', padding: 4, display: 'flex', flexShrink: 0 }}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgb(var(--c-text-secondary) / calc(0.35 * var(--c-sec-mult)))', padding: 4, display: 'flex', flexShrink: 0 }}
                               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#E11919' }}
-                              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(155,163,167,0.35)' }}
+                              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgb(var(--c-text-secondary) / calc(0.35 * var(--c-sec-mult)))' }}
                             >
                               <Trash2 size={12} />
                             </button>
@@ -531,8 +531,8 @@ export function ChatBot() {
                     <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
                       <img src="/logo-badge.png" style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0 }} />
                       <div style={{
-                        maxWidth: '85%', padding: '10px 14px', background: 'rgba(255,255,255,0.05)',
-                        border: '1px solid rgba(255,255,255,0.07)', color: '#F5F5F5', fontSize: '0.74rem', lineHeight: 1.7,
+                        maxWidth: '85%', padding: '10px 14px', background: 'rgb(var(--c-overlay) / calc(0.05 * var(--c-ovl-mult)))',
+                        border: '1px solid rgb(var(--c-overlay) / calc(0.07 * var(--c-ovl-mult)))', color: 'rgb(var(--c-text-primary))', fontSize: '0.74rem', lineHeight: 1.7,
                         clipPath: 'polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px))',
                       }}>
                         Hey {name}! 👋 I'm Box, your GOAT AI coach.
@@ -547,7 +547,7 @@ export function ChatBot() {
                           onClick={() => sendText(s)}
                           style={{
                             background: 'rgba(225,25,25,0.06)', border: '1px solid rgba(225,25,25,0.22)',
-                            color: 'rgba(245,245,245,0.85)', fontSize: '0.68rem', padding: '6px 10px',
+                            color: 'rgb(var(--c-text-primary) / 0.85)', fontSize: '0.68rem', padding: '6px 10px',
                             cursor: 'pointer', textAlign: 'left', lineHeight: 1.3,
                             clipPath: 'polygon(0 0,calc(100% - 5px) 0,100% 5px,100% 100%,0 100%)',
                             transition: 'all 0.15s',
@@ -578,9 +578,9 @@ export function ChatBot() {
                           padding: '10px 14px',
                           background: msg.from === 'user'
                             ? 'linear-gradient(135deg,#E11919,#B90F16)'
-                            : 'rgba(255,255,255,0.05)',
-                          border: msg.from === 'bot' ? '1px solid rgba(255,255,255,0.07)' : 'none',
-                          color: '#F5F5F5',
+                            : 'rgb(var(--c-overlay) / calc(0.05 * var(--c-ovl-mult)))',
+                          border: msg.from === 'bot' ? '1px solid rgb(var(--c-overlay) / calc(0.07 * var(--c-ovl-mult)))' : 'none',
+                          color: 'rgb(var(--c-text-primary))',
                           fontSize: '0.74rem',
                           lineHeight: 1.7,
                           wordBreak: 'break-word',
@@ -593,7 +593,7 @@ export function ChatBot() {
                               ? <ChatMarkdown text={msg.text} />
                               : msg.streaming
                                 ? <span className="chat-dots"><span /><span /><span /></span>
-                                : <span style={{ color: 'rgba(155,163,167,0.5)', fontStyle: 'italic' }}>No response.</span>)
+                                : <span style={{ color: 'rgb(var(--c-text-secondary) / calc(0.5 * var(--c-sec-mult)))', fontStyle: 'italic' }}>No response.</span>)
                             : <span style={{ whiteSpace: 'pre-wrap' }}>{msg.text}</span>}
                         </div>
 
@@ -608,9 +608,9 @@ export function ChatBot() {
                               onClick={() => copyMessage(msg.id, msg.text)}
                               title="Copy"
                               aria-label="Copy message"
-                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(155,163,167,0.4)', padding: 2, display: 'flex' }}
-                              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#F5F5F5' }}
-                              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(155,163,167,0.4)' }}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgb(var(--c-text-secondary) / calc(0.4 * var(--c-sec-mult)))', padding: 2, display: 'flex' }}
+                              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'rgb(var(--c-text-primary))' }}
+                              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgb(var(--c-text-secondary) / calc(0.4 * var(--c-sec-mult)))' }}
                             >
                               {copiedId === msg.id ? <Check size={11} /> : <Copy size={11} />}
                             </button>
@@ -619,9 +619,9 @@ export function ChatBot() {
                                 onClick={retryLast}
                                 title="Regenerate"
                                 aria-label="Regenerate response"
-                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(155,163,167,0.4)', padding: 2, display: 'flex' }}
-                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#F5F5F5' }}
-                                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(155,163,167,0.4)' }}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgb(var(--c-text-secondary) / calc(0.4 * var(--c-sec-mult)))', padding: 2, display: 'flex' }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'rgb(var(--c-text-primary))' }}
+                                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgb(var(--c-text-secondary) / calc(0.4 * var(--c-sec-mult)))' }}
                               >
                                 <RefreshCw size={11} />
                               </button>
@@ -639,9 +639,9 @@ export function ChatBot() {
               {/* Input */}
               <div style={{
                 padding: '10px 12px',
-                borderTop: '1px solid rgba(255,255,255,0.06)',
+                borderTop: '1px solid rgb(var(--c-overlay) / calc(0.06 * var(--c-ovl-mult)))',
                 display: 'flex', gap: 8, alignItems: 'flex-end', flexShrink: 0,
-                background: '#0a0a0a',
+                background: 'rgb(var(--c-bg-surface))',
               }}>
                 <textarea
                   ref={textareaRef}
@@ -654,21 +654,21 @@ export function ChatBot() {
                   style={{
                     flex: 1,
                     resize: 'none',
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    color: '#F5F5F5', fontSize: '0.74rem', fontFamily: 'inherit',
+                    background: 'rgb(var(--c-overlay) / calc(0.04 * var(--c-ovl-mult)))',
+                    border: '1px solid rgb(var(--c-overlay) / calc(0.08 * var(--c-ovl-mult)))',
+                    color: 'rgb(var(--c-text-primary))', fontSize: '0.74rem', fontFamily: 'inherit',
                     padding: '9px 12px', outline: 'none',
                     maxHeight: 120,
                     clipPath: 'polygon(0 0,calc(100% - 5px) 0,100% 5px,100% 100%,0 100%)',
                     opacity: streaming ? 0.5 : 1,
                   }}
                   onFocus={e => { (e.target as HTMLElement).style.borderColor = 'rgba(225,25,25,0.45)' }}
-                  onBlur={e => { (e.target as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)' }}
+                  onBlur={e => { (e.target as HTMLElement).style.borderColor = 'rgb(var(--c-overlay) / calc(0.08 * var(--c-ovl-mult)))' }}
                 />
                 {streaming ? (
                   <button onClick={stopStreaming} title="Stop generating" aria-label="Stop generating"
                     style={{
-                      background: 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', color: '#F5F5F5',
+                      background: 'rgb(var(--c-overlay) / calc(0.08 * var(--c-ovl-mult)))', border: 'none', cursor: 'pointer', color: 'rgb(var(--c-text-primary))',
                       width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
                       flexShrink: 0, clipPath: 'polygon(0 0,calc(100% - 5px) 0,100% 5px,100% 100%,0 100%)',
                     }}>
@@ -677,10 +677,10 @@ export function ChatBot() {
                 ) : (
                   <button onClick={send} disabled={!input.trim()} aria-label="Send message"
                     style={{
-                      background: input.trim() ? 'linear-gradient(135deg,#E11919,#B90F16)' : 'rgba(255,255,255,0.05)',
+                      background: input.trim() ? 'linear-gradient(135deg,#E11919,#B90F16)' : 'rgb(var(--c-overlay) / calc(0.05 * var(--c-ovl-mult)))',
                       border: 'none',
                       cursor: input.trim() ? 'pointer' : 'default',
-                      color: input.trim() ? '#fff' : 'rgba(155,163,167,0.3)',
+                      color: input.trim() ? '#fff' : 'rgb(var(--c-text-secondary) / calc(0.3 * var(--c-sec-mult)))',
                       width: 36, height: 36,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       transition: 'all 0.15s', flexShrink: 0,

@@ -81,7 +81,7 @@ function InlineText({ text }: { text: string }) {
   return (
     <>
       {parts.map((part, i) => {
-        if (part.startsWith('**') && part.endsWith('**')) return <strong key={i} style={{ color: '#F5F5F5', fontWeight: 700 }}>{part.slice(2, -2)}</strong>
+        if (part.startsWith('**') && part.endsWith('**')) return <strong key={i} style={{ color: 'rgb(var(--c-text-primary))', fontWeight: 700 }}>{part.slice(2, -2)}</strong>
         if (part.startsWith('`') && part.endsWith('`')) return <code key={i} style={inlineCodeStyle}>{part.slice(1, -1)}</code>
         return <span key={i}>{part}</span>
       })}
@@ -91,7 +91,7 @@ function InlineText({ text }: { text: string }) {
 
 const inlineCodeStyle: CSSProperties = {
   background: 'rgba(225,25,25,0.1)',
-  color: '#ff8080',
+  color: 'rgb(var(--c-code-accent))',
   padding: '1px 5px',
   fontSize: '0.82em',
   fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
@@ -100,11 +100,11 @@ const inlineCodeStyle: CSSProperties = {
 function CodeBlock({ lang, code }: { lang: string; code: string }) {
   const [copied, setCopied] = useState(false)
   return (
-    <div style={{ margin: '6px 0', border: '1px solid rgba(255,255,255,0.08)', background: '#050505' }}>
+    <div style={{ margin: '6px 0', border: '1px solid rgb(var(--c-overlay) / calc(0.08 * var(--c-ovl-mult)))', background: 'rgb(var(--c-bg-base))' }}>
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '5px 10px', borderBottom: '1px solid rgba(255,255,255,0.06)',
-        fontSize: '0.62rem', letterSpacing: '0.08em', color: 'rgba(155,163,167,0.5)', textTransform: 'uppercase',
+        padding: '5px 10px', borderBottom: '1px solid rgb(var(--c-overlay) / calc(0.06 * var(--c-ovl-mult)))',
+        fontSize: '0.62rem', letterSpacing: '0.08em', color: 'rgb(var(--c-text-secondary) / calc(0.5 * var(--c-sec-mult)))', textTransform: 'uppercase',
       }}>
         <span>{lang || 'code'}</span>
         <button
@@ -116,7 +116,7 @@ function CodeBlock({ lang, code }: { lang: string; code: string }) {
         </button>
       </div>
       <pre style={{ margin: 0, padding: '10px 12px', overflowX: 'auto' }}>
-        <code style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', fontSize: '0.78rem', color: '#e5e5e5', whiteSpace: 'pre' }}>
+        <code style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', fontSize: '0.78rem', color: 'rgb(var(--c-text-primary))', whiteSpace: 'pre' }}>
           {code}
         </code>
       </pre>
@@ -125,9 +125,9 @@ function CodeBlock({ lang, code }: { lang: string; code: string }) {
 }
 
 const headingStyle: Record<1 | 2 | 3, CSSProperties> = {
-  1: { fontSize: '0.98rem', fontWeight: 700, color: '#F5F5F5', margin: '10px 0 4px' },
-  2: { fontSize: '0.9rem', fontWeight: 700, color: '#F5F5F5', margin: '8px 0 4px' },
-  3: { fontSize: '0.82rem', fontWeight: 700, color: 'rgba(245,245,245,0.9)', margin: '6px 0 3px' },
+  1: { fontSize: '0.98rem', fontWeight: 700, color: 'rgb(var(--c-text-primary))', margin: '10px 0 4px' },
+  2: { fontSize: '0.9rem', fontWeight: 700, color: 'rgb(var(--c-text-primary))', margin: '8px 0 4px' },
+  3: { fontSize: '0.82rem', fontWeight: 700, color: 'rgb(var(--c-text-primary) / 0.9)', margin: '6px 0 3px' },
 }
 
 export function ChatMarkdown({ text }: { text: string }) {
